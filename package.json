@@ -1,0 +1,27 @@
+{
+  "name": "extension-port-stream",
+  "version": "1.0.0",
+  "description": "A module for creating a node style stream over a WebExtension port object.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/MetaMask/extension-port-stream.git"
+  },
+  "keywords": [
+    "WebExtension",
+    "Stream"
+  ],
+  "author": "Dan Finlay <dan@danfinlay.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MetaMask/extension-port-stream/issues"
+  },
+  "homepage": "https://github.com/MetaMask/extension-port-stream#readme",
+  "dependencies": {
+    "readable-stream": "^2.3.6",
+    "util": "^0.11.0"
+  }
+}
