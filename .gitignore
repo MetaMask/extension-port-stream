@@ -1,1 +1,16 @@
 node_modules/
+package-lock.json
+dist/
+
+# IDEs
+.idea
+.vscode
+.sublime-project
+
+# VIM
+*.swp
+*.swo
+
+temp
+.tmp
+.DS_Store
