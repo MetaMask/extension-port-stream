@@ -33,15 +33,15 @@ export default class PortDuplexStream extends Duplex {
    *
    * @private
    */
-  _onDisconnect() {
+  _onDisconnect(): void {
     this.destroy();
   }
 
   /**
    * Explicitly sets read operations to a no-op
    */
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  _read() {
+  _read(): undefined {
+    return undefined;
   }
 
   /**
