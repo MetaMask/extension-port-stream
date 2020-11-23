@@ -11,7 +11,7 @@ export default class PortDuplexStream extends Duplex {
   constructor(port: Runtime.Port) {
     super({ objectMode: true });
     this._port = port;
-    this._port.onMessage.addListener((msg: any) => this._onMessage(msg));
+    this._port.onMessage.addListener((msg: unknown) => this._onMessage(msg));
     this._port.onDisconnect.addListener(() => this._onDisconnect());
   }
 
@@ -21,7 +21,7 @@ export default class PortDuplexStream extends Duplex {
    *
    * @param msg - Payload from the onMessage listener of the port
    */
-  private _onMessage(msg: any): void {
+  private _onMessage(msg: unknown): void {
     if (Buffer.isBuffer(msg)) {
       // delete msg._isBuffer;
       const data = Buffer.from(msg);
@@ -54,13 +54,13 @@ export default class PortDuplexStream extends Duplex {
    * @param cb - Called when writing is complete or an error occurs
    */
   _write(
-    msg: any,
+    msg: unknown,
     _encoding: BufferEncoding,
     cb: (error?: Error | null) => void,
   ): void {
     try {
       if (Buffer.isBuffer(msg)) {
-        const data: Record<string, any> = msg.toJSON();
+        const data: Record<string, unknown> = msg.toJSON();
         data._isBuffer = true;
         this._port.postMessage(data);
       } else {
