@@ -5,7 +5,7 @@ A module for creating a Node-style stream over a WebExtension [Runtime.Port](htt
 ## Usage
 
 ```javascript
-const PortStream = require('extension-port-stream')
+import PortStream from 'extension-port-stream'
 
 extension.runtime.onConnect.addListener(connectRemote)
 const portStream = new PortStream(remotePort)
