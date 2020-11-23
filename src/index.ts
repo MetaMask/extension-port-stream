@@ -1,9 +1,14 @@
 import { Duplex } from 'stream';
+import { Runtime } from 'webextension-polyfill-ts';
 
 export default class PortDuplexStream extends Duplex {
-  private _port: Record<string, any>;
+  private _port: Runtime.Port;
 
-  constructor(port: Record<string, any>) {
+  /**
+   * @param port - An instance of WebExtensions Runtime.Port. See:
+   * {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port}
+   */
+  constructor(port: Runtime.Port) {
     super({ objectMode: true });
     this._port = port;
     this._port.onMessage.addListener((msg: any) => this._onMessage(msg));
@@ -14,10 +19,9 @@ export default class PortDuplexStream extends Duplex {
    * Callback triggered when a message is received from
    * the remote Port associated with this Stream.
    *
-   * @private
-   * @param msg - Payload from the onMessage listener of Port
+   * @param msg - Payload from the onMessage listener of the port
    */
-  _onMessage(msg: any): void {
+  private _onMessage(msg: any): void {
     if (Buffer.isBuffer(msg)) {
       // delete msg._isBuffer;
       const data = Buffer.from(msg);
@@ -28,32 +32,32 @@ export default class PortDuplexStream extends Duplex {
   }
 
   /**
-   * Callback triggered when the remote Port
-   * associated with this Stream disconnects.
-   *
-   * @private
+   * Callback triggered when the remote Port associated with this Stream
+   * disconnects.
    */
-  _onDisconnect(): void {
+  private _onDisconnect(): void {
     this.destroy();
   }
 
   /**
-   * Explicitly sets read operations to a no-op
+   * Explicitly sets read operations to a no-op.
    */
-  _read(): undefined {
+  _read(): void {
     return undefined;
   }
 
   /**
-   * Called internally when data should be written to
-   * this writable stream.
+   * Called internally when data should be written to this writable stream.
    *
-   * @private
-   * @param msg Arbitrary object to write
-   * @param encoding Encoding to use when writing payload
-   * @param cb Called when writing is complete or an error occurs
+   * @param msg - Arbitrary object to write
+   * @param encoding - Encoding to use when writing payload
+   * @param cb - Called when writing is complete or an error occurs
    */
-  _write(msg: any, _encoding: BufferEncoding, cb: (error?: Error | null) => void): void {
+  _write(
+    msg: any,
+    _encoding: BufferEncoding,
+    cb: (error?: Error | null) => void,
+  ): void {
     try {
       if (Buffer.isBuffer(msg)) {
         const data: Record<string, any> = msg.toJSON();
