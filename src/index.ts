@@ -71,4 +71,4 @@ export = class PortDuplexStream extends Duplex {
     }
     return cb();
   }
-}
+};
