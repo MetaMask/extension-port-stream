@@ -12,3 +12,9 @@ const portStream = new PortStream(remotePort)
 
 // Enjoy!
 ```
+
+## Running tests
+
+```bash
+yarn test
+```
