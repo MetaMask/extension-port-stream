@@ -10,7 +10,8 @@
     "build": "rm -rf ./dist && tsc --project .",
     "lint": "eslint . --ext ts,js,json",
     "lint:fix": "yarn lint --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "yarn build && yarn lint"
   },
   "files": [
     "dist/"
