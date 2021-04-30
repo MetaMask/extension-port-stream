@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- move webextension-polyfill-ts from devDependencies to dependencies ([#11](https://github.com/MetaMask/extension-port-stream/pull/11))
+- Move `webextension-polyfill-ts` from `devDependencies` to `dependencies` ([#11](https://github.com/MetaMask/extension-port-stream/pull/11))
 
 ## [2.0.0] - 2020-11-23
 
