@@ -1,6 +1,9 @@
 import { Duplex } from 'stream';
 import { Runtime } from 'webextension-polyfill-ts';
 
+const browser: any  = globalThis.browser || globalThis.chrome;
+const runtime: object = browser.runtime || {};
+
 export = class PortDuplexStream extends Duplex {
   private _port: Runtime.Port;
 
@@ -12,7 +15,10 @@ export = class PortDuplexStream extends Duplex {
     super({ objectMode: true });
     this._port = port;
     this._port.onMessage.addListener((msg: unknown) => this._onMessage(msg));
-    this._port.onDisconnect.addListener(() => this._onDisconnect());
+    this._port.onDisconnect.addListener((portObj) => {
+      const err = portObj?.error || runtime.lastError;
+      this._onDisconnect(err);
+    });
   }
 
   /**
@@ -34,8 +40,8 @@ export = class PortDuplexStream extends Duplex {
    * Callback triggered when the remote Port associated with this Stream
    * disconnects.
    */
-  private _onDisconnect(): void {
-    this.destroy();
+  private _onDisconnect(err?: Error): void {
+    this.destroy(err);
   }
 
   /**
