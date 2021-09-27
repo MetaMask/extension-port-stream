@@ -1,7 +1,7 @@
 import { Duplex } from 'stream';
 import { Runtime } from 'webextension-polyfill-ts';
 
-export = class PortDuplexStream extends Duplex {
+export default class PortDuplexStream extends Duplex {
   private _port: Runtime.Port;
 
   /**
@@ -70,4 +70,4 @@ export = class PortDuplexStream extends Duplex {
     }
     return cb();
   }
-};
+}
