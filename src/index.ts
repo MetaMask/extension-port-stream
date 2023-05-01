@@ -1,18 +1,35 @@
 import { Duplex } from 'stream';
-import { Runtime } from 'webextension-polyfill-ts';
+import { Runtime, Browser } from 'webextension-polyfill-ts';
 
 export default class PortDuplexStream extends Duplex {
   private _port: Runtime.Port;
+
+  private _browser: Browser | undefined;
 
   /**
    * @param port - An instance of WebExtensions Runtime.Port. See:
    * {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port}
    */
-  constructor(port: Runtime.Port) {
+  constructor(port: Runtime.Port, browser?: Browser) {
     super({ objectMode: true });
     this._port = port;
+    this._browser = browser;
     this._port.onMessage.addListener((msg: unknown) => this._onMessage(msg));
     this._port.onDisconnect.addListener(() => this._onDisconnect());
+  }
+
+  private _checkError(): boolean {
+    if (this._browser === undefined) {
+      return true;
+    }
+    const err = this._browser.runtime.lastError as any;
+    if (err?.message?.includes('Could not establish connection.')) {
+      return true;
+    } else if (err) {
+      console.warn(`[extension-port-stream] ${err.message}`);
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -35,6 +52,7 @@ export default class PortDuplexStream extends Duplex {
    * disconnects.
    */
   private _onDisconnect(): void {
+    this._checkError();
     this.destroy();
   }
 
