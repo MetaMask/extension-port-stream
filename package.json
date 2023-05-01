@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/MetaMask/extension-port-stream#readme",
   "dependencies": {
-    "webextension-polyfill-ts": "^0.22.0"
+    "webextension-polyfill-ts": "^0.26.0"
   },
   "devDependencies": {
     "@metamask/eslint-config": "^4.1.0",
