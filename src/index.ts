@@ -37,12 +37,13 @@ export default class PortDuplexStream extends Duplex {
    * Log receiving/sending of message (if logger is configured)
    *
    * @param data - Payload from the onMessage listener or the postMessage sender
+   * @param out - whether message is going out or coming in
    */
-  private _log(data: unknown) {
+  private _log(data: unknown, out: boolean) {
     this._logger.logger(
       this._logger.source,
       this._logger.destination,
-      false,
+      out,
       data,
     );
   }
@@ -56,10 +57,10 @@ export default class PortDuplexStream extends Duplex {
   private _onMessage(msg: unknown): void {
     if (Buffer.isBuffer(msg)) {
       const data: Buffer = Buffer.from(msg);
-      this._log(data);
+      this._log(data, false);
       this.push(data);
     } else {
-      this._log(msg);
+      this._log(msg, false);
       this.push(msg);
     }
   }
@@ -95,10 +96,10 @@ export default class PortDuplexStream extends Duplex {
       if (Buffer.isBuffer(msg)) {
         const data: Record<string, unknown> = msg.toJSON();
         data._isBuffer = true;
-        this._log(data);
+        this._log(data, true);
         this._port.postMessage(data);
       } else {
-        this._log(msg);
+        this._log(msg, true);
         this._port.postMessage(msg);
       }
     } catch (error) {
