@@ -95,8 +95,10 @@ export default class PortDuplexStream extends Duplex {
       if (Buffer.isBuffer(msg)) {
         const data: Record<string, unknown> = msg.toJSON();
         data._isBuffer = true;
+        this._log(data);
         this._port.postMessage(data);
       } else {
+        this._log(msg);
         this._port.postMessage(msg);
       }
     } catch (error) {
