@@ -1,21 +1,12 @@
 import { Duplex } from 'stream';
 import { Runtime } from 'webextension-polyfill-ts';
 
-interface Logger {
-  source: string;
-  destination: string;
-  logger: (
-    source: string,
-    destination: string,
-    out: boolean,
-    data: unknown,
-  ) => void;
-}
+type Log = (data: unknown, out: boolean) => void;
 
 export default class PortDuplexStream extends Duplex {
   private _port: Runtime.Port;
 
-  private _logger: Logger;
+  private _log: Log;
 
   /**
    * @param port - An instance of WebExtensions Runtime.Port. See:
@@ -26,26 +17,7 @@ export default class PortDuplexStream extends Duplex {
     this._port = port;
     this._port.onMessage.addListener((msg: unknown) => this._onMessage(msg));
     this._port.onDisconnect.addListener(() => this._onDisconnect());
-    this._logger = {
-      source: '',
-      destination: '',
-      logger: () => null,
-    };
-  }
-
-  /**
-   * Log receiving/sending of message (if logger is configured)
-   *
-   * @param data - Payload from the onMessage listener or the postMessage sender
-   * @param out - whether message is going out or coming in
-   */
-  private _log(data: unknown, out: boolean) {
-    this._logger.logger(
-      this._logger.source,
-      this._logger.destination,
-      out,
-      data,
-    );
+    this._log = () => null;
   }
 
   /**
@@ -111,15 +83,9 @@ export default class PortDuplexStream extends Duplex {
   /**
    * Call to set a custom logger for incoming/outgoing messages
    *
-   * @param source - string representing the sender
-   * @param destination - string representing the receiver
-   * @param logger - the logger function
+   * @param log - the logger function
    */
-  _setLogger(source: string, destination: string, logger: Logger['logger']) {
-    this._logger = {
-      source,
-      destination,
-      logger,
-    };
+  _setLogger(log: Log) {
+    this._log = log;
   }
 }
