@@ -1,8 +1,12 @@
 import { Duplex } from 'stream';
 import { Runtime } from 'webextension-polyfill-ts';
 
+type Log = (data: unknown, out: boolean) => void;
+
 export default class PortDuplexStream extends Duplex {
   private _port: Runtime.Port;
+
+  private _log: Log;
 
   /**
    * @param port - An instance of WebExtensions Runtime.Port. See:
@@ -13,6 +17,7 @@ export default class PortDuplexStream extends Duplex {
     this._port = port;
     this._port.onMessage.addListener((msg: unknown) => this._onMessage(msg));
     this._port.onDisconnect.addListener(() => this._onDisconnect());
+    this._log = () => null;
   }
 
   /**
@@ -24,8 +29,10 @@ export default class PortDuplexStream extends Duplex {
   private _onMessage(msg: unknown): void {
     if (Buffer.isBuffer(msg)) {
       const data: Buffer = Buffer.from(msg);
+      this._log(data, false);
       this.push(data);
     } else {
+      this._log(msg, false);
       this.push(msg);
     }
   }
@@ -61,13 +68,24 @@ export default class PortDuplexStream extends Duplex {
       if (Buffer.isBuffer(msg)) {
         const data: Record<string, unknown> = msg.toJSON();
         data._isBuffer = true;
+        this._log(data, true);
         this._port.postMessage(data);
       } else {
+        this._log(msg, true);
         this._port.postMessage(msg);
       }
     } catch (error) {
       return cb(new Error('PortDuplexStream - disconnected'));
     }
     return cb();
+  }
+
+  /**
+   * Call to set a custom logger for incoming/outgoing messages
+   *
+   * @param log - the logger function
+   */
+  _setLogger(log: Log) {
+    this._log = log;
   }
 }
