@@ -31,10 +31,11 @@
   },
   "homepage": "https://github.com/MetaMask/extension-port-stream#readme",
   "dependencies": {
-    "webextension-polyfill-ts": "^0.26.0"
+    "webextension-polyfill": ">=0.10.0 <1.0"
   },
   "devDependencies": {
     "@metamask/eslint-config": "^4.1.0",
+    "@types/webextension-polyfill": ">=0.10.0 <1.0",
     "@types/node": "14.14.7",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
