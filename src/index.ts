@@ -1,5 +1,5 @@
 import { Duplex } from 'stream';
-import { Runtime } from 'webextension-polyfill-ts';
+import { Runtime } from 'webextension-polyfill';
 
 type Log = (data: unknown, out: boolean) => void;
 
