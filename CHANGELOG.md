@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [2.1.1]
-### Updated
+### Changed
 - deps: replace webextension-polyfill-ts with webextension-polyfill ([#43](https://github.com/MetaMask/extension-port-stream/pull/43))
 
 ## [2.1.0] - 2023-06-15
