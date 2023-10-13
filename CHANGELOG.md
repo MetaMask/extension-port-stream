@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0]
+### Uncategorized
+- deps: use portable readable-stream instead of native streams ([#51](https://github.com/MetaMask/extension-port-stream/pull/51))
+- Bump word-wrap from 1.2.3 to 1.2.4 ([#50](https://github.com/MetaMask/extension-port-stream/pull/50))
+- Bump semver from 5.7.1 to 5.7.2 ([#49](https://github.com/MetaMask/extension-port-stream/pull/49))
+
 ## [2.1.1]
 ### Changed
 - deps: replace webextension-polyfill-ts with webextension-polyfill ([#43](https://github.com/MetaMask/extension-port-stream/pull/43))
@@ -35,7 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **(BREAKING)** Remove `readable-stream` dependency ([#4](https://github.com/MetaMask/extension-port-stream/pull/4))
   - Consumers using this package in browser environments will have to bring their own Node.js stream polyfill.
 
-[Unreleased]: https://github.com/MetaMask/extension-port-stream/compare/v2.1.1...HEAD
+[Unreleased]: https://github.com/MetaMask/extension-port-stream/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/MetaMask/extension-port-stream/compare/v2.1.1...v3.0.0
 [2.1.1]: https://github.com/MetaMask/extension-port-stream/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/MetaMask/extension-port-stream/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/MetaMask/extension-port-stream/compare/v2.0.0...v2.0.1
