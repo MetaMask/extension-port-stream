@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0]
 ### Changed
-- **BREAKING:** use portable readable-stream instead of native streams ([#51](https://github.com/MetaMask/extension-port-stream/pull/51))
+- **BREAKING**: Use portable `readable-stream@^3.6.2` instead of native streams ([#51](https://github.com/MetaMask/extension-port-stream/pull/51))
 
 ## [2.1.1]
 ### Changed
