@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [4.0.0]
-### Uncategorized
-- fix(deps): move webextension-polyfill to peerDeps + devDeps  ([#54](https://github.com/MetaMask/extension-port-stream/pull/54))
-- Enabling MetaMask security code scanner ([#53](https://github.com/MetaMask/extension-port-stream/pull/53))
+### Fixed
+- **BREAKING**: `webextension-polyfill` is now a peer-dependency rather than a dependency. Users are expected to provide the runtime. ([#54](https://github.com/MetaMask/extension-port-stream/pull/54))
+- `webextension-polyfill` import changed to type-import ([#54](https://github.com/MetaMask/extension-port-stream/pull/54))
 
 ## [3.0.0]
 ### Changed
