@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0]
 ### Fixed
 - **BREAKING**: `webextension-polyfill` is now a peer-dependency rather than a dependency. Users are expected to provide the runtime. ([#54](https://github.com/MetaMask/extension-port-stream/pull/54))
-- `webextension-polyfill` import changed to type-import ([#54](https://github.com/MetaMask/extension-port-stream/pull/54))
+- `webextension-polyfill` import changed to type-only import ([#54](https://github.com/MetaMask/extension-port-stream/pull/54))
 
 ## [3.0.0]
 ### Changed
