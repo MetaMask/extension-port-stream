@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0]
+### Fixed
+- **BREAKING**: `webextension-polyfill` is now a peer-dependency rather than a dependency. Users are expected to provide the runtime. ([#54](https://github.com/MetaMask/extension-port-stream/pull/54))
+- `webextension-polyfill` import changed to type-only import ([#54](https://github.com/MetaMask/extension-port-stream/pull/54))
+
 ## [3.0.0]
 ### Changed
 - **BREAKING**: Use portable `readable-stream@^3.6.2` instead of native streams ([#51](https://github.com/MetaMask/extension-port-stream/pull/51))
@@ -39,7 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **(BREAKING)** Remove `readable-stream` dependency ([#4](https://github.com/MetaMask/extension-port-stream/pull/4))
   - Consumers using this package in browser environments will have to bring their own Node.js stream polyfill.
 
-[Unreleased]: https://github.com/MetaMask/extension-port-stream/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/extension-port-stream/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/MetaMask/extension-port-stream/compare/v3.0.0...v4.0.0
 [3.0.0]: https://github.com/MetaMask/extension-port-stream/compare/v2.1.1...v3.0.0
 [2.1.1]: https://github.com/MetaMask/extension-port-stream/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/MetaMask/extension-port-stream/compare/v2.0.1...v2.1.0
