@@ -89,3 +89,5 @@ export default class PortDuplexStream extends Duplex {
     this._log = log;
   }
 }
+
+export { PortDuplexStream };
