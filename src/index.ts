@@ -1,4 +1,4 @@
-import { Duplex } from 'readable-stream';
+import { Duplex, DuplexOptions } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
 
 type Log = (data: unknown, out: boolean) => void;
@@ -11,9 +11,13 @@ export default class PortDuplexStream extends Duplex {
   /**
    * @param port - An instance of WebExtensions Runtime.Port. See:
    * {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port}
+   * @param streamOptions - stream options passed on to Duplex stream constructor
    */
-  constructor(port: Runtime.Port) {
-    super({ objectMode: true });
+  constructor(port: Runtime.Port, streamOptions: DuplexOptions) {
+    super({
+      objectMode: true,
+      ...streamOptions,
+    });
     this._port = port;
     this._port.onMessage.addListener((msg: unknown) => this._onMessage(msg));
     this._port.onDisconnect.addListener(() => this._onDisconnect());
