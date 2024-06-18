@@ -7,9 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [4.1.0]
-### Uncategorized
-- build(deps): bump braces in the npm_and_yarn group across 1 directory ([#56](https://github.com/MetaMask/extension-port-stream/pull/56))
-- feat: Add named export of `PortDuplexStream` ([#57](https://github.com/MetaMask/extension-port-stream/pull/57))
+### Added
+- Add named export of `PortDuplexStream` in addition to existing default export ([#57](https://github.com/MetaMask/extension-port-stream/pull/57))
 
 ## [4.0.0]
 ### Fixed
