@@ -13,7 +13,7 @@ export default class PortDuplexStream extends Duplex {
    * {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port}
    * @param streamOptions - stream options passed on to Duplex stream constructor
    */
-  constructor(port: Runtime.Port, streamOptions: DuplexOptions) {
+  constructor(port: Runtime.Port, streamOptions: DuplexOptions = {}) {
     super({
       objectMode: true,
       ...streamOptions,
