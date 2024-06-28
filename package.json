@@ -1,6 +1,6 @@
 {
   "name": "extension-port-stream",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "A module for creating a node style stream over a WebExtension port object.",
   "main": "dist/index.js",
   "engines": {
