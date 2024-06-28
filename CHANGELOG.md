@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [4.2.0]
-### Uncategorized
-- feat: Allow overriding Duplex stream constructor options ([#59](https://github.com/MetaMask/extension-port-stream/pull/59))
+### Changed
+- Allow overriding Duplex stream constructor options ([#59](https://github.com/MetaMask/extension-port-stream/pull/59))
 
 ## [4.1.0]
 ### Added
