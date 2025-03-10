@@ -1,9 +1,9 @@
-import { Duplex, DuplexOptions } from 'readable-stream';
+import { type DuplexOptions, Duplex } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
 
 type Log = (data: unknown, out: boolean) => void;
 
-export default class PortDuplexStream extends Duplex {
+class PortDuplexStream extends Duplex {
   private _port: Runtime.Port;
 
   private _log: Log;
@@ -94,4 +94,4 @@ export default class PortDuplexStream extends Duplex {
   }
 }
 
-export { PortDuplexStream };
+export { PortDuplexStream, PortDuplexStream as default };

@@ -2,12 +2,25 @@
   "name": "extension-port-stream",
   "version": "4.2.0",
   "description": "A module for creating a node style stream over a WebExtension port object.",
-  "main": "dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
   "engines": {
     "node": ">=12.0.0"
   },
   "scripts": {
-    "build": "rm -rf ./dist && tsc --project .",
+    "build": "ts-bridge --project tsconfig.build.json --clean",
     "lint": "eslint . --ext ts,js,json",
     "lint:fix": "yarn lint --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -35,8 +48,9 @@
   },
   "devDependencies": {
     "@metamask/eslint-config": "^4.1.0",
-    "@types/readable-stream": "4.0.0",
+    "@ts-bridge/cli": "^0.2.0",
     "@types/node": "14.14.7",
+    "@types/readable-stream": "4.0.0",
     "@types/webextension-polyfill": ">=0.10.0 <1.0",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
@@ -44,7 +58,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-json": "^2.1.2",
     "eslint-plugin-node": "^11.1.0",
-    "typescript": "^4.0.5",
+    "typescript": "^5.5.4",
     "webextension-polyfill": ">=0.10.0 <1.0"
   },
   "peerDependencies": {
