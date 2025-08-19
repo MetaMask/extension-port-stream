@@ -3,7 +3,7 @@ import type { Runtime } from 'webextension-polyfill';
 
 type Log = (data: unknown, out: boolean) => void;
 
-export default class PortDuplexStream extends Duplex {
+export class ExtensionPortStream extends Duplex {
   readonly #port: Runtime.Port;
 
   #log: Log;
@@ -94,5 +94,3 @@ export default class PortDuplexStream extends Duplex {
     this.#log = log;
   }
 }
-
-export { PortDuplexStream };
