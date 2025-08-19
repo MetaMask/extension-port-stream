@@ -74,7 +74,7 @@ export class ExtensionPortStream extends Duplex {
    * Called internally when data should be written to this writable stream.
    *
    * @param msg - Arbitrary object to write
-   * @param encoding - Encoding to use when writing payload
+   * @param encoding - Encoding to use when writing payload (must be UTF-8)
    * @param callback - Called when writing is complete or an error occurs
    */
   override _write(
