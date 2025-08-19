@@ -75,16 +75,16 @@ export class ExtensionPortStream extends Duplex {
    *
    * @param msg - Arbitrary object to write
    * @param encoding - Encoding to use when writing payload
-   * @param cb - Called when writing is complete or an error occurs
+   * @param callback - Called when writing is complete or an error occurs
    */
   override _write(
     msg: Json,
     encoding: BufferEncoding,
-    cb: (error?: Error | null) => void
+    callback: (error?: Error | null) => void
   ): void {
     if (encoding && encoding !== 'utf8' && encoding !== 'utf-8') {
       this.#safeCallback(
-        cb,
+        callback,
         new Error('PortStream only supports UTF-8 encoding')
       );
       return;
@@ -95,11 +95,11 @@ export class ExtensionPortStream extends Duplex {
       this.#postMessage(msg);
     } catch (error) {
       return this.#safeCallback(
-        cb,
+        callback,
         new Error('PortDuplexStream - disconnected')
       );
     }
-    return this.#safeCallback(cb);
+    return this.#safeCallback(callback);
   }
 
   /**
