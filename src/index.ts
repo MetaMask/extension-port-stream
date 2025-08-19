@@ -1,3 +1,4 @@
+import { Json } from '@metamask/utils';
 import { Duplex, DuplexOptions } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
 
@@ -77,13 +78,13 @@ export class ExtensionPortStream extends Duplex {
    * @param cb - Called when writing is complete or an error occurs
    */
   override _write(
-    msg: unknown,
+    msg: Json,
     _encoding: BufferEncoding,
     cb: (error?: Error | null) => void
   ): void {
     try {
       this.#log(msg, true);
-      this.#port.postMessage(msg);
+      this.#postMessage(msg);
     } catch (error) {
       return this.#safeCallback(
         cb,
@@ -112,5 +113,17 @@ export class ExtensionPortStream extends Duplex {
    */
   #safeCallback(callback: (err?: Error | null) => void, error?: Error | null) {
     queueMicrotask(() => callback(error));
+  }
+
+  /**
+   * Send a message to the other end. This takes one argument, which is a JSON
+   * object representing the message to send. It will be delivered to any script
+   * listening to the port's onMessage event, or to the native application if
+   * this port is connected to a native application.
+   *
+   * @param message - the message to send
+   */
+  #postMessage(message: Json) {
+    this.#port.postMessage(message);
   }
 }
