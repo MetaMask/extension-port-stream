@@ -33,6 +33,7 @@ export class ExtensionPortStream extends Duplex {
   constructor(port: Runtime.Port, { log, ...streamOptions }: Options = {}) {
     super({
       objectMode: true,
+      highWaterMark: 256,
       ...streamOptions,
     });
 
