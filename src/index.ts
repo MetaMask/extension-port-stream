@@ -1,5 +1,5 @@
-import { Duplex, DuplexOptions } from "readable-stream";
-import type { Runtime } from "webextension-polyfill";
+import { Duplex, DuplexOptions } from 'readable-stream';
+import type { Runtime } from 'webextension-polyfill';
 
 /**
  * A function to log messages.
@@ -50,14 +50,8 @@ export class ExtensionPortStream extends Duplex {
    * @param msg - Payload from the onMessage listener of the port
    */
   readonly #onMessage = (msg: unknown, _port: Runtime.Port) => {
-    if (Buffer.isBuffer(msg)) {
-      const data: Buffer = Buffer.from(msg);
-      this.#log(data, false);
-      this.push(data);
-    } else {
-      this.#log(msg, false);
-      this.push(msg);
-    }
+    this.#log(msg, false);
+    this.push(msg);
   };
 
   /**
@@ -88,15 +82,8 @@ export class ExtensionPortStream extends Duplex {
     cb: (error?: Error | null) => void,
   ): void {
     try {
-      if (Buffer.isBuffer(msg)) {
-        const data: Record<string, unknown> = msg.toJSON();
-        data._isBuffer = true;
-        this.#log(data, true);
-        this.#port.postMessage(data);
-      } else {
-        this.#log(msg, true);
-        this.#port.postMessage(msg);
-      }
+      this.#log(msg, true);
+      this.#port.postMessage(msg);
     } catch (error) {
       return cb(new Error('PortDuplexStream - disconnected'));
     }
