@@ -4,9 +4,9 @@ import type { Runtime } from 'webextension-polyfill';
 type Log = (data: unknown, out: boolean) => void;
 
 export default class PortDuplexStream extends Duplex {
-  private _port: Runtime.Port;
+  readonly #port: Runtime.Port;
 
-  private _log: Log;
+  #log: Log;
 
   /**
    * @param port - An instance of WebExtensions Runtime.Port. See:
@@ -18,10 +18,11 @@ export default class PortDuplexStream extends Duplex {
       objectMode: true,
       ...streamOptions,
     });
-    this._port = port;
-    this._port.onMessage.addListener((msg: unknown) => this._onMessage(msg));
-    this._port.onDisconnect.addListener(() => this._onDisconnect());
-    this._log = () => null;
+
+    this.#port = port;
+    port.onMessage.addListener(this.#onMessage);
+    port.onDisconnect.addListener(this.#onDisconnect);
+    this.#log = () => null;
   }
 
   /**
@@ -30,30 +31,30 @@ export default class PortDuplexStream extends Duplex {
    *
    * @param msg - Payload from the onMessage listener of the port
    */
-  private _onMessage(msg: unknown): void {
+  readonly #onMessage = (msg: unknown, _port: Runtime.Port) => {
     if (Buffer.isBuffer(msg)) {
       const data: Buffer = Buffer.from(msg);
-      this._log(data, false);
+      this.#log(data, false);
       this.push(data);
     } else {
-      this._log(msg, false);
+      this.#log(msg, false);
       this.push(msg);
     }
-  }
+  };
 
   /**
    * Callback triggered when the remote Port associated with this Stream
    * disconnects.
    */
-  private _onDisconnect(): void {
+  #onDisconnect = (): void => {
     this.destroy();
-  }
+  };
 
   /**
    * Explicitly sets read operations to a no-op.
    */
-  _read(): void {
-    return undefined;
+  override _read() {
+    // No-op, push happens in onMessage.
   }
 
   /**
@@ -63,7 +64,7 @@ export default class PortDuplexStream extends Duplex {
    * @param encoding - Encoding to use when writing payload
    * @param cb - Called when writing is complete or an error occurs
    */
-  _write(
+  override _write(
     msg: unknown,
     _encoding: BufferEncoding,
     cb: (error?: Error | null) => void,
@@ -72,11 +73,11 @@ export default class PortDuplexStream extends Duplex {
       if (Buffer.isBuffer(msg)) {
         const data: Record<string, unknown> = msg.toJSON();
         data._isBuffer = true;
-        this._log(data, true);
-        this._port.postMessage(data);
+        this.#log(data, true);
+        this.#port.postMessage(data);
       } else {
-        this._log(msg, true);
-        this._port.postMessage(msg);
+        this.#log(msg, true);
+        this.#port.postMessage(msg);
       }
     } catch (error) {
       return cb(new Error('PortDuplexStream - disconnected'));
@@ -89,8 +90,8 @@ export default class PortDuplexStream extends Duplex {
    *
    * @param log - the logger function
    */
-  _setLogger(log: Log) {
-    this._log = log;
+  setLogger(log: Log) {
+    this.#log = log;
   }
 }
 
