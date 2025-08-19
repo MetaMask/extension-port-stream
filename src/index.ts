@@ -60,7 +60,7 @@ export class ExtensionPortStream extends Duplex {
    * disconnects.
    */
   #onDisconnect = (): void => {
-    this.destroy();
+    this.destroy(new Error('Port disconnected'));
   };
 
   /**
