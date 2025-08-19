@@ -79,15 +79,18 @@ export class ExtensionPortStream extends Duplex {
   override _write(
     msg: unknown,
     _encoding: BufferEncoding,
-    cb: (error?: Error | null) => void,
+    cb: (error?: Error | null) => void
   ): void {
     try {
       this.#log(msg, true);
       this.#port.postMessage(msg);
     } catch (error) {
-      return cb(new Error('PortDuplexStream - disconnected'));
+      return this.#safeCallback(
+        cb,
+        new Error('PortDuplexStream - disconnected')
+      );
     }
-    return cb();
+    return this.#safeCallback(cb);
   }
 
   /**
@@ -97,5 +100,17 @@ export class ExtensionPortStream extends Duplex {
    */
   setLogger(log: Log) {
     this.#log = log;
+  }
+
+  /**
+   * Safely invokes a callback by scheduling it in the microtask queue.
+   * This prevents reentrancy issues where the callback might throw an exception
+   * and cause the calling code to execute the callback again before returning.
+   *
+   * @param callback - the callback to invoke
+   * @param error - the error to pass to the callback
+   */
+  #safeCallback(callback: (err?: Error | null) => void, error?: Error | null) {
+    queueMicrotask(() => callback(error));
   }
 }
