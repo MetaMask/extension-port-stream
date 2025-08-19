@@ -85,7 +85,7 @@ export class ExtensionPortStream extends Duplex {
     if (encoding && encoding !== 'utf8' && encoding !== 'utf-8') {
       this.#safeCallback(
         callback,
-        new Error('PortStream only supports UTF-8 encoding')
+        new Error('ExtensionPortStream only supports UTF-8 encoding')
       );
       return;
     }
@@ -96,7 +96,7 @@ export class ExtensionPortStream extends Duplex {
     } catch (error) {
       return this.#safeCallback(
         callback,
-        new Error('PortDuplexStream - disconnected')
+        error instanceof Error ? error : new Error(String(error))
       );
     }
     return this.#safeCallback(callback);
