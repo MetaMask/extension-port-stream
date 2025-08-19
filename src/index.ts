@@ -1,25 +1,9 @@
 import type { Json } from '@metamask/utils';
-import { Duplex, type DuplexOptions } from 'readable-stream';
+import { Duplex } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
+import type { Log, Options } from './helpers';
 
-/**
- * A function to log messages.
- *
- * @param data - the data to log
- * @param outgoing - whether the data is outgoing (true) or incoming (false)
- */
-type Log = (data: unknown, outgoing: boolean) => void;
-
-/**
- * Options for the ExtensionPortStream.
- *
- * @property log - a function to log messages
- * @property debug - whether to enable debug mode
- * @property chunkSize - the size of each chunk in bytes
- */
-export type Options = {
-  log?: Log;
-} & DuplexOptions;
+export type { Log, Options } from './helpers';
 
 export class ExtensionPortStream extends Duplex {
   readonly #port: Runtime.Port;
