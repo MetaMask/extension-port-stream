@@ -1,7 +1,24 @@
-import { Duplex, DuplexOptions } from 'readable-stream';
-import type { Runtime } from 'webextension-polyfill';
+import { Duplex, DuplexOptions } from "readable-stream";
+import type { Runtime } from "webextension-polyfill";
 
-type Log = (data: unknown, out: boolean) => void;
+/**
+ * A function to log messages.
+ *
+ * @param data - the data to log
+ * @param outgoing - whether the data is outgoing (true) or incoming (false)
+ */
+type Log = (data: unknown, outgoing: boolean) => void;
+
+/**
+ * Options for the ExtensionPortStream.
+ *
+ * @property log - a function to log messages
+ * @property debug - whether to enable debug mode
+ * @property chunkSize - the size of each chunk in bytes
+ */
+export type Options = {
+  log?: Log;
+} & DuplexOptions;
 
 export class ExtensionPortStream extends Duplex {
   readonly #port: Runtime.Port;
@@ -11,9 +28,9 @@ export class ExtensionPortStream extends Duplex {
   /**
    * @param port - An instance of WebExtensions Runtime.Port. See:
    * {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port}
-   * @param streamOptions - stream options passed on to Duplex stream constructor
+   * @param options - stream options passed on to Duplex stream constructor
    */
-  constructor(port: Runtime.Port, streamOptions: DuplexOptions = {}) {
+  constructor(port: Runtime.Port, { log, ...streamOptions }: Options = {}) {
     super({
       objectMode: true,
       ...streamOptions,
@@ -22,7 +39,7 @@ export class ExtensionPortStream extends Duplex {
     this.#port = port;
     port.onMessage.addListener(this.#onMessage);
     port.onDisconnect.addListener(this.#onDisconnect);
-    this.#log = () => null;
+    this.#log = log ?? (() => undefined);
   }
 
   /**
