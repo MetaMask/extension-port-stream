@@ -1,5 +1,5 @@
-import { Json } from '@metamask/utils';
-import { Duplex, DuplexOptions } from 'readable-stream';
+import type { Json } from '@metamask/utils';
+import { Duplex, type DuplexOptions } from 'readable-stream';
 import type { Runtime } from 'webextension-polyfill';
 
 /**
