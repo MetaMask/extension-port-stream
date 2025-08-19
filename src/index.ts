@@ -79,9 +79,17 @@ export class ExtensionPortStream extends Duplex {
    */
   override _write(
     msg: Json,
-    _encoding: BufferEncoding,
+    encoding: BufferEncoding,
     cb: (error?: Error | null) => void
   ): void {
+    if (encoding && encoding !== 'utf8' && encoding !== 'utf-8') {
+      this.#safeCallback(
+        cb,
+        new Error('PortStream only supports UTF-8 encoding')
+      );
+      return;
+    }
+
     try {
       this.#log(msg, true);
       this.#postMessage(msg);
