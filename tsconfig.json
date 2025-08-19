@@ -6,9 +6,11 @@
     "moduleResolution": "Node",
     "sourceMap": true,
     "strict": true,
-    "target": "ES2017",
+    "target": "ES2021",
+  "lib": ["ES2021", "DOM"],
+    "skipLibCheck": true,
     "typeRoots": [
-      "./node_modules/@types",
+      "./node_modules/@types"
     ],
     "outDir": "dist"
   },
@@ -17,6 +19,10 @@
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.test.js",
+    "**/*.test.jsx"
   ]
 }
