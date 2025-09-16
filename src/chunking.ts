@@ -18,8 +18,8 @@ function getNextId(): number {
   return _randomCounter;
 }
 
-// half a "frame" (at 60 fps) per chunk.
-const FRAME_BUDGET = 1000 / 60 / 2;
+// half a "frame" (at 60 fps) per chunk, in milliseconds
+const FRAME_BUDGET_MS = 1000 / 60 / 2;
 
 /**
  * Yield control to allow other tasks to run. Uses scheduler.yield() if available
@@ -70,39 +70,37 @@ function utf8Len(cp: number): number {
 function getJsonSliceIndex(json: string, start: number, maxBytes: number) {
   // Start with the overhead bytes that JSON.stringify will add (2 bytes for
   // the outer quotation marks)
-  let used = 2;
+  let bytesUsed = 2;
 
   let i = start;
   while (i < json.length) {
-    const before = used;
+    const before = bytesUsed;
 
     // Use codePointAt to correctly handle multi-byte characters (like emojis)
     // that are represented by surrogate pairs in JavaScript strings.
     const cp = json.codePointAt(i) as number;
     // A code point > 0xFFFF is a "wide" character, taking up two 16-bit
     // code units in a JavaScript string (a surrogate pair).
-    const unitLen = cp > 0xffff ? 2 : 1;
+    const codeUnits = cp > 0xffff ? 2 : 1;
 
-    // An unpaired (or "lone") surrogate is invalid UTF-16. JSON.stringify
-    // escapes these as a 6-byte sequence (e.g., "\uD800").
+    // A quote (") or backslash (\) is escaped by JSON.stringify,
+    // turning one character into two bytes (e.g., `\"` or `\\`).
     if (cp === 0x22 || cp === 0x5c) {
-      // A quote (") or backslash (\) is escaped by JSON.stringify,
-      // turning one character into two bytes (e.g., `\"` or `\\`).
-      used += 2;
+      bytesUsed += 2;
     } else {
       // For all other characters, add their standard UTF-8 byte length.
-      used += utf8Len(cp);
+      bytesUsed += utf8Len(cp);
     }
 
-    if (used > maxBytes) {
+    if (bytesUsed > maxBytes) {
       // The last code point made us exceed the max size. We can't include it.
       // The loop will terminate, and `i` will point to the start of this
       // code point, effectively excluding it from the slice.
-      used = before;
+      bytesUsed = before;
       break;
     }
     // Advance the index by the number of 16-bit units this code point used.
-    i += unitLen;
+    i += codeUnits;
   }
 
   return i;
@@ -116,7 +114,8 @@ function getJsonSliceIndex(json: string, start: number, maxBytes: number) {
  *
  * Chunks the payload at character boundaries, and is aware of "wide" characters
  * like 😀 (U+1F600) which is 4 UTF-8 bytes, but only 2 JS String#length
- * characters. It never splits across a grapheme boundary.
+ * characters. It never splits across a surrogate pair boundary (i.e., never
+ * splits a single Unicode code point).
  *
  * @param payload - the payload to be chunked
  * @param chunkSize - the size of each chunk in bytes. If `0`, returns the
@@ -140,7 +139,7 @@ export async function * toFrames<Payload extends Json>(
   let seq = 0;
 
   do {
-    if (performance.now() - begin >= FRAME_BUDGET) {
+    if (performance.now() - begin >= FRAME_BUDGET_MS) {
       // prevent background processing from locking up for too long by allowing
       // other macro tasks to perform work between chunks
       await tick();
@@ -154,8 +153,12 @@ export async function * toFrames<Payload extends Json>(
     let end: number;
 
     // Check if the rest of the string is guaranteed to fit.
-    // The worst-case size for a character is 6 bytes (escaped) + 2 for quotes.
-    if (remainingLen * 6 + 2 <= dataMaxLength) {
+    // We use a conservative upper bound: assume each remaining UTF‑16 code unit
+    // costs 4 bytes in JSON.stringify(frame), plus 2 outer quotes for the whole
+    // frame. This overestimates (non‑BMP code points are 4 bytes but span 2
+    // code units; ASCII is 1 byte; quotes/backslashes are 2 bytes), so if this
+    // bound fits, the actual bytes will fit as well.
+    if (remainingLen * 3 + 2 <= dataMaxLength) {
       // If the max possible size of the remainder fits, take it all and skip
       // the very expensive `getJsonSliceIndex` call.
       end = payloadLength;

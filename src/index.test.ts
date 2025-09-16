@@ -437,6 +437,70 @@ describe('ExtensionPortStream', () => {
     });
   });
 
+  describe('early-fit fast path bound', () => {
+    it('hits equality: remainingLen*3 + 2 === dataMaxLength (chunkSize=64) on the final chunk', async () => {
+      await jest.isolateModulesAsync(async () => {
+        // Fresh module state so id starts at 1
+        const { ExtensionPortStream } = require('.');
+
+        const chunkSize = 64; // bytes
+        const characters = 36;
+        const payload = '✓'.repeat(characters); // BMP 3-byte chars
+
+        // sanity check: unchunked byte size > maxMessageSize to force chunking
+        const unchunkedBytes = new TextEncoder().encode(
+          JSON.stringify(payload),
+        ).length;
+        expect(unchunkedBytes).toBe(
+          2 /* quotes*/ + 3 /* max byte length*/ * characters,
+        ); // 110, leaving 18 bytes for 2 sets of headers and escapes
+
+        // set up a port stream that triggers chunking
+        const { bgPortStream, uiPortStream, bgPort } = init({
+          chunkSize,
+          Constructor: ExtensionPortStream,
+        });
+
+        // kick off the write
+        const resultPromise = sendMessage(bgPortStream, payload);
+        const data = await new Promise((resolve) => uiPortStream.on('data', resolve));
+        // payload reconstructed correctly
+        expect(data).toEqual(payload);
+
+        const result = await resultPromise;
+        // result as expected
+        expect(result.error).toBeNull();
+        expect(result.messageTooLarge).toBe(true);
+
+        // Calls:
+        // 1) initial unchunked send (throws due to size)
+        // 2) first frame (seq 0, fin 0)
+        // 3) second frame (seq 1, fin 1)-  hits our fast path at its max size
+        expect(bgPort.postMessage).toHaveBeenCalledTimes(3);
+
+        // inspect the two _frame_ sends
+        const frame1 = bgPort.postMessage.mock.calls[1][0] as string;
+        const frame2 = bgPort.postMessage.mock.calls[2][0] as string;
+        // the byte size of the first frame should be _exactly_ the chunk size
+        const frame1Bytes = new TextEncoder().encode(frame1).length;
+        // -4 for because _internally_ quotation marks are added AND escaped
+        expect(frame1Bytes).toBe(chunkSize - 4);
+        // the byte size of the second frame should be _exactly_ the chunk size
+        const frame2Bytes = new TextEncoder().encode(frame2).length;
+        // -4 for because _internally_ quotation marks are added AND escaped
+        expect(frame2Bytes).toBe(chunkSize - 4);
+
+        // santiy checkcheck the frame headers: id=1, seq=0/1, fin=0/1
+        expect(frame1.startsWith('1|0|0')).toBe(true);
+        expect(frame2.startsWith('1|1|1')).toBe(true);
+
+        // the entire payload is the original json string + quotation marks
+        const json = JSON.stringify(payload);
+        expect(json.length).toBe(characters + 2);
+      });
+    });
+  });
+
   describe('character JSON stringified byte lengths', () => {
     // Comprehensive character-by-character testing
     const generateCharacterTests = (): {
