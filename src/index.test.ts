@@ -440,9 +440,6 @@ describe('ExtensionPortStream', () => {
   describe('early-fit fast path bound', () => {
     it('hits equality: remainingLen*3 + 2 === dataMaxLength (chunkSize=64) on the final chunk', async () => {
       await jest.isolateModulesAsync(async () => {
-        // Fresh module state so id starts at 1
-        const { ExtensionPortStream } = require('.');
-
         const chunkSize = 64; // bytes
         const characters = 36;
         const payload = '✓'.repeat(characters); // BMP 3-byte chars
@@ -452,13 +449,14 @@ describe('ExtensionPortStream', () => {
           JSON.stringify(payload),
         ).length;
         expect(unchunkedBytes).toBe(
-          2 /* quotes*/ + 3 /* max byte length*/ * characters,
+          2 /* quotes*/ + (3 /* max byte length*/ * characters),
         ); // 110, leaving 18 bytes for 2 sets of headers and escapes
 
         // set up a port stream that triggers chunking
         const { bgPortStream, uiPortStream, bgPort } = init({
           chunkSize,
-          Constructor: ExtensionPortStream,
+          // Fresh module state so id starts at 1
+          Constructor: require('.').ExtensionPortStream,
         });
 
         // kick off the write
