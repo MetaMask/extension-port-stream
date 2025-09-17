@@ -133,7 +133,6 @@ export async function * toFrames<Payload extends Json>(
   const json = JSON.stringify(payload);
   const payloadLength = json.length;
 
-  // we need to leave space for our header
   const id = getNextId();
   let index = 0;
   let seq = 0;
