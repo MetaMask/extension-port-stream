@@ -152,12 +152,15 @@ export async function * toFrames<Payload extends Json>(
     const remainingLen = payloadLength - index;
     let end: number;
 
-    // Check if the rest of the string is guaranteed to fit.
-    // We use a conservative upper bound: assume each remaining UTF‑16 code unit
-    // costs 4 bytes in JSON.stringify(frame), plus 2 outer quotes for the whole
-    // frame. This overestimates (non‑BMP code points are 4 bytes but span 2
-    // code units; ASCII is 1 byte; quotes/backslashes are 2 bytes), so if this
-    // bound fits, the actual bytes will fit as well.
+    // Fast path: check if the rest of the string is guaranteed to fit.
+    // Worse-case is that our `json` string contains only BMP non‑ASCII
+    // (U+0800..U+FFFF, excluding surrogates), like `✓`, which is 3 bytes. While
+    // there *are* "supplementary" (> U+FFFF) characters, which appear as
+    // surrogate pairs (4 bytes across 2 code units), our `json` has already
+    // gone through `JSON.stringify(payload)`, so no literal control chars or
+    // lone surrogates remain (they were escaped to ASCII sequences). Therefore,
+    // 3 bytes per code unit plus 2 outer quotes is a tight safe bound: if this
+    // bound fits, the actual serialized bytes will always fit. Zoom zoom.
     if (remainingLen * 3 + 2 <= dataMaxLength) {
       // If the max possible size of the remainder fits, take it all and skip
       // the very expensive `getJsonSliceIndex` call.
