@@ -90,4 +90,4 @@ export type TransportChunkFrame<
   InputSeq extends Seq = Seq,
   InputFinal extends Final = Final,
   InputData extends Data = Data
-> = `${InputId}|${InputSeq}|${InputFinal}|${InputData}`;
+> = `${InputId}|${InputSeq}|${InputFinal}${InputData}`;
