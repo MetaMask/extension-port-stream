@@ -85,4 +85,9 @@ export interface ChunkFrame {
  * @property data - the actual data of this chunk
  */
 
-export type TransportChunkFrame = `${Id}|${Seq}|${Final}${Data}`;
+export type TransportChunkFrame<
+  InputId extends Id = Id,
+  InputSeq extends Seq = Seq,
+  InputFinal extends Final = Final,
+  InputData extends Data = Data
+> = `${InputId}|${InputSeq}|${InputFinal}|${InputData}`;
