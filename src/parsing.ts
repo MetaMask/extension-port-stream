@@ -74,7 +74,7 @@ function maybeParseStringAsChunkFrame(
     }
     i++;
     // we compute the id as we parse it from left to right.
-    id = id * 10 + d;
+    id = ((id << 1) + (id << 3) + d) | 0;
   }
 
   if (i === length) {
@@ -101,7 +101,7 @@ function maybeParseStringAsChunkFrame(
     }
     i++;
     // we compute the seq as we parse it from left to right.
-    seq = seq * 10 + d;
+    seq = ((seq << 1) + (seq << 3) + d) | 0;
   }
 
   if (i === length) {
