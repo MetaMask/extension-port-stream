@@ -9,11 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [5.0.0]
 
-### Uncategorized
+### Changed
 
-- feat: chunk large port stream messages into smaller frames ([#68](https://github.com/MetaMask/extension-port-stream/pull/68))
-- chore: add workflow_dispatch to security-code-scanner ([#65](https://github.com/MetaMask/extension-port-stream/pull/65))
-- build(deps): bump micromatch from 4.0.2 to 4.0.8 in the npm_and_yarn group ([#63](https://github.com/MetaMask/extension-port-stream/pull/63))
+- **BREAKING:** Chunk large port stream messages into smaller frames by default ([#68](https://github.com/MetaMask/extension-port-stream/pull/68))
+  - By default, `ExtensionPortStream` will send messages in 64MB chunks on Chromium-based browsers. When this mode is used the receiving end must also use `ExtensionPortStream` in its default mode:
+    ```javascript
+    import { ExtensionPortStream } from "extension-port-stream";
+
+    extension.runtime.onConnect.addListener(connectRemote);
+    const portStream = new ExtensionPortStream(remotePort, {
+      chunkSize: 0, // disable chunking
+    });
+ 
+    // Enjoy!
+    ```
+  - To disable chunking set the `chunkSize` option to `0`. This will make the transport
+mostly backwards compatible with v4:
+    ```javascript
+    import { ExtensionPortStream } from "extension-port-stream";
+
+    extension.runtime.onConnect.addListener(connectRemote);
+    const portStream = new ExtensionPortStream(remotePort, {
+      chunkSize: 0, // disable chunking
+    });
+
+    // Enjoy!
+    ```
+  - `message-too-large` is emitted when a message is too large to send in a single `postMessage` call and needs to be chunked. This event is only emitted when chunking is enabled (default).
+- **BREAKING:** Node.js-style `Buffer` messages are no longer supported ([#68](https://github.com/MetaMask/extension-port-stream/pull/68))
 
 ## [4.2.0]
 
