@@ -1,4 +1,4 @@
-name: Build and Lint
+name: Build, Lint, and Test
 
 on:
   push:
@@ -6,26 +6,27 @@ on:
   pull_request:
 
 jobs:
-  build-lint:
-    name: Build and Lint
-    runs-on: ubuntu-20.04
+  build-lint-test:
+    name: Build, Lint, and Test
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [22.x]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn --frozen-lockfile --ignore-scripts
       - run: yarn build
       - run: yarn lint
+
+      - run: yarn test:coverage
   all-jobs-pass:
     name: All jobs pass
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
-      - build-lint
+      - build-lint-test
     steps:
-      - uses: actions/checkout@v2
       - run: echo "Great success!"
