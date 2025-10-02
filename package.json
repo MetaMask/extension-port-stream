@@ -35,6 +35,8 @@
     "readable-stream": "^3.6.2 || ^4.4.2"
   },
   "devDependencies": {
+    "@lavamoat/allow-scripts": "^3.0.4",
+    "@lavamoat/preinstall-always-fail": "^2.0.0",
     "@metamask/eslint-config": "^4.1.0",
     "@metamask/utils": "^11.4.2",
     "@types/jest": "^30.0.0",
@@ -55,5 +57,12 @@
   },
   "peerDependencies": {
     "webextension-polyfill": "^0.10.0 || ^0.11.0 || ^0.12.0"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "lavamoat": {
+    "allowScripts": {
+      "@lavamoat/preinstall-always-fail": false,
+      "jest>@jest/core>jest-resolve>unrs-resolver": false
+    }
   }
 }
