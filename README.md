@@ -1,13 +1,14 @@
-# Extension Port Stream
+# `extension-port-stream`
 
 A module for creating a Node-style stream over a WebExtension [Runtime.Port](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port) object.
 
-## Breaking changes from v4 to v5
+## Installation
 
-1. Chunking mode is enabled by default (see the [Usage](#usage) section below).
-2. Node.js-style `Buffer` messages are no longer supported.
+`yarn add extension-port-stream`
 
-Additionally, the timing of logging, errors, and callbacks may be handled differently.
+or
+
+`npm install extension-port-stream`
 
 ## Usage
 
@@ -65,8 +66,18 @@ portStream.on("message-too-large", (data: MessageTooLargeEventData) => {
 });
 ```
 
-## Running tests
+## Breaking changes from v4 to v5
 
-```bash
-yarn test
-```
+1. Chunking mode is enabled by default (see the [Usage](#usage) section below).
+2. Node.js-style `Buffer` messages are no longer supported.
+
+Additionally, the timing of logging, errors, and callbacks may be handled differently.
+
+## Contributing
+
+### Setup
+
+- Install the current LTS version of [Node.js](https://nodejs.org)
+  - If you are using [nvm](https://github.com/creationix/nvm#installation) (recommended) running `nvm install` will install the latest version and running `nvm use` will automatically choose the right node version for you.
+- Install [Yarn](https://yarnpkg.com) v4 via [Corepack](https://github.com/nodejs/corepack?tab=readme-ov-file#how-to-install)
+- Run `yarn install` to install dependencies and run any required post-install scripts
