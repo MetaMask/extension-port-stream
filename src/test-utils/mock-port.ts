@@ -1,6 +1,7 @@
 /* eslint-disable no-invalid-this */
 
 import type { Runtime } from 'webextension-polyfill';
+import { ExtensionPortStream } from '..';
 
 /**
  * Mock Runtime.Port that simulates Chrome's behavior including size limits.
@@ -17,11 +18,25 @@ export class MockPort implements Runtime.Port {
 
   private maxMessageSize: number;
 
+  readonly expectedErrorMessage: string;
+
   private disconnected = false;
 
-  constructor(name: string, maxMessageSize: number = 64 * 1024 * 1024) {
+  /**
+   *
+   * @param name - The name of the port
+   * @param maxMessageSize - The maximum message size in bytes (default 64MB)
+   * @param expectedErrorMessage - The expected error message when exceeding max size (for testing purposes)
+   * Originally found here: https://source.chromium.org/chromium/chromium/src/+/main:extensions/renderer/api/messaging/messaging_util.cc;l=97
+   */
+  constructor(
+    name: string,
+    maxMessageSize: number = 64 * 1024 * 1024,
+    expectedErrorMessage: string = ExtensionPortStream.ErrorMessages[0],
+  ) {
     this.name = name;
     this.maxMessageSize = maxMessageSize;
+    this.expectedErrorMessage = expectedErrorMessage;
   }
 
   postMessage = jest.fn((message: unknown): void => {
@@ -34,7 +49,7 @@ export class MockPort implements Runtime.Port {
     const byteSize = new TextEncoder().encode(serialized).length;
 
     if (byteSize > this.maxMessageSize) {
-      throw new Error('Message length exceeded maximum allowed length.');
+      throw new Error(this.expectedErrorMessage);
     }
 
     if (this.connectedPort && !this.connectedPort.disconnected) {
@@ -114,9 +129,10 @@ export class MockPort implements Runtime.Port {
  */
 export function createMockPortPair(
   maxMessageSize: number = 64 * 1024 * 1024,
+  expectedErrorMessage: string = ExtensionPortStream.ErrorMessages[0],
 ): [portA: MockPort, portB: MockPort] {
-  const portA = new MockPort('portA', maxMessageSize);
-  const portB = new MockPort('portB', maxMessageSize);
+  const portA = new MockPort('portA', maxMessageSize, expectedErrorMessage);
+  const portB = new MockPort('portB', maxMessageSize, expectedErrorMessage);
 
   portA.connectTo(portB);
 

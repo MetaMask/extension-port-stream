@@ -11,12 +11,17 @@ describe('ExtensionPortStream', () => {
     chunkSize,
     maxMessageSize,
     Constructor = ExtensionPortStream,
+    expectedErrorMessage = ExtensionPortStream.ErrorMessages[0],
   }: {
     chunkSize: number;
     maxMessageSize?: number;
     Constructor?: typeof ExtensionPortStream;
+    expectedErrorMessage?: (typeof ExtensionPortStream.ErrorMessages)[number];
   }) {
-    const [bgPort, uiPort] = createMockPortPair(maxMessageSize ?? chunkSize);
+    const [bgPort, uiPort] = createMockPortPair(
+      maxMessageSize ?? chunkSize,
+      expectedErrorMessage,
+    );
     const bgPortStream = new Constructor(bgPort, {
       chunkSize,
     });
@@ -415,13 +420,40 @@ describe('ExtensionPortStream', () => {
       expect(result.messageTooLarge).toEqual(false);
     });
 
+    it.each(ExtensionPortStream.ErrorMessages)(
+      'emits error from postMessage failure while chunking',
+      async (expectedErrorMessage) => {
+        const { bgPortStream, bgPort } = init({
+          chunkSize: 128,
+          expectedErrorMessage,
+        });
+        const simulatedError = new Error('Simulated port.postMessage Failure');
+        bgPort.postMessage
+          .mockImplementationOnce(() => {
+            // force the chunking path
+            throw new Error(bgPort.expectedErrorMessage);
+          })
+          .mockImplementationOnce(() => {
+            // force the error handling path within chunking
+            throw simulatedError;
+          });
+        const result = await sendMessage(bgPortStream, generatePayload(128));
+        expect(result.error).toBeInstanceOf(AggregateError);
+        expect(result.error.message).toEqual(
+          'ExtensionPortStream chunked postMessage failed',
+        );
+        expect(result.error.errors).toEqual([simulatedError]);
+        expect(result.messageTooLarge).toEqual(true);
+      },
+    );
+
     it('emits error from postMessage failure while chunking', async () => {
       const { bgPortStream, bgPort } = init({ chunkSize: 128 });
       const simulatedError = new Error('Simulated port.postMessage Failure');
       bgPort.postMessage
         .mockImplementationOnce(() => {
           // force the chunking path
-          throw new Error('Message length exceeded maximum allowed length.');
+          throw new Error(bgPort.expectedErrorMessage);
         })
         .mockImplementationOnce(() => {
           // force the error handling path within chunking
