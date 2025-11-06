@@ -421,7 +421,7 @@ describe('ExtensionPortStream', () => {
     });
 
     it.each(ExtensionPortStream.ErrorMessages)(
-      'emits error from postMessage failure while chunking',
+      'emits "%s" error from postMessage failure while chunking',
       async (expectedErrorMessage) => {
         const { bgPortStream, bgPort } = init({
           chunkSize: 128,
@@ -446,27 +446,6 @@ describe('ExtensionPortStream', () => {
         expect(result.messageTooLarge).toEqual(true);
       },
     );
-
-    it('emits error from postMessage failure while chunking', async () => {
-      const { bgPortStream, bgPort } = init({ chunkSize: 128 });
-      const simulatedError = new Error('Simulated port.postMessage Failure');
-      bgPort.postMessage
-        .mockImplementationOnce(() => {
-          // force the chunking path
-          throw new Error(bgPort.expectedErrorMessage);
-        })
-        .mockImplementationOnce(() => {
-          // force the error handling path within chunking
-          throw simulatedError;
-        });
-      const result = await sendMessage(bgPortStream, generatePayload(128));
-      expect(result.error).toBeInstanceOf(AggregateError);
-      expect(result.error.message).toEqual(
-        'ExtensionPortStream chunked postMessage failed',
-      );
-      expect(result.error.errors).toEqual([simulatedError]);
-      expect(result.messageTooLarge).toEqual(true);
-    });
   });
 
   describe('early-fit fast path bound', () => {
