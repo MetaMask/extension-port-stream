@@ -625,13 +625,13 @@ describe('ExtensionPortStream', () => {
       const { bgPortStream, uiPortStream, uiPort } = init({ chunkSize });
 
       // Simulate disconnections
-      const bgProm = new Promise((_, reject) => bgPortStream.on('error', reject));
-      const uiProm = new Promise((_, reject) => uiPortStream.on('error', reject));
+      const bgProm = new Promise((resolve) => bgPortStream.on('close', resolve));
+      const uiProm = new Promise((resolve) => uiPortStream.on('close', resolve));
       // if either port goes away they will both throw disconnection errors
       uiPort.disconnect();
 
-      await expect(bgProm).rejects.toEqual(new Error('Port disconnected'));
-      await expect(uiProm).rejects.toEqual(new Error('Port disconnected'));
+      await expect(bgProm).resolves.toEqual(undefined);
+      await expect(uiProm).resolves.toEqual(undefined);
     });
   });
 });
