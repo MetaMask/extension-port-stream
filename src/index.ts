@@ -27,6 +27,13 @@ export type {
 export { CHUNK_SIZE } from './constants';
 
 export class ExtensionPortStream extends Duplex {
+  static readonly ErrorMessages = [
+    // used after 2025-10-24. see https://source.chromium.org/chromium/chromium/src/+/main:extensions/renderer/api/messaging/messaging_util.cc;l=99;bpv=1;bpt=0;drc=6e12249bb20a2aaf40f8b115e2ea07627c13f144;dlc=c8490d20ef70d32273aa08940bf138d6096c54b5
+    'Message length exceeded maximum allowed length of 64MB.',
+    // used before 2025-10-24. see https://source.chromium.org/chromium/chromium/src/+/main:extensions/renderer/api/messaging/messaging_util.cc;l=99;bpv=1;bpt=0;drc=6e12249bb20a2aaf40f8b115e2ea07627c13f144;dlc=c8490d20ef70d32273aa08940bf138d6096c54b5
+    'Message length exceeded maximum allowed length.',
+  ] as const;
+
   readonly #port: Runtime.Port;
 
   #log: Log;
@@ -141,7 +148,7 @@ export class ExtensionPortStream extends Duplex {
           // if the error is about message size being too large
           // note: this message doesn't currently happen on firefox, as it doesn't
           // have a maximum message size
-          err.message === 'Message length exceeded maximum allowed length.'
+          ExtensionPortStream.ErrorMessages.includes(err.message as typeof ExtensionPortStream.ErrorMessages[number])
         ) {
           const chunkSize = this.#chunkSize;
           // Emit event when message is too large and needs to be chunked
