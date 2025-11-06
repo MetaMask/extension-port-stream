@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [5.0.1]
 
-### Uncategorized
+### Fixed
 
-- fix: handle chrome's new error message-too-large error message, coming in a future chrome release ([#83](https://github.com/MetaMask/extension-port-stream/pull/83))
-- fix: don't throw when upstream port disconnects ([#82](https://github.com/MetaMask/extension-port-stream/pull/82))
+- handle chrome's new error message-too-large error message, coming in a future chrome release ([#83](https://github.com/MetaMask/extension-port-stream/pull/83))
+- don't throw when upstream port disconnects ([#82](https://github.com/MetaMask/extension-port-stream/pull/82))
+
+### Changed
+
 - chore: update security-code-scanner@main to action-security-code-scanner@v1 ([#67](https://github.com/MetaMask/extension-port-stream/pull/67))
 - Add allow-scripts (+ preinstall-always-fail) ([#80](https://github.com/MetaMask/extension-port-stream/pull/80))
 
@@ -38,13 +41,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - To disable chunking set the `chunkSize` option to `0`. This will make the transport
     mostly backwards compatible with v4:
     `javascript
-    import { ExtensionPortStream } from "extension-port-stream";
-    extension.runtime.onConnect.addListener(connectRemote);
-    const portStream = new ExtensionPortStream(remotePort, {
-      chunkSize: 0, // disable chunking
-    });
-    // Enjoy!
-    `
+import { ExtensionPortStream } from "extension-port-stream";
+extension.runtime.onConnect.addListener(connectRemote);
+const portStream = new ExtensionPortStream(remotePort, {
+  chunkSize: 0, // disable chunking
+});
+// Enjoy!
+`
   - `message-too-large` is emitted when a message is too large to send in a single `postMessage` call and needs to be chunked. This event is only emitted when chunking is enabled (default).
 
 - **BREAKING:** Node.js-style `Buffer` messages are no longer supported ([#68](https://github.com/MetaMask/extension-port-stream/pull/68))
