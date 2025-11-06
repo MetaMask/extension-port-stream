@@ -100,7 +100,7 @@ export class ExtensionPortStream extends Duplex {
   #onDisconnect = (_port: Runtime.Port) => {
     // clean up, as we aren't going to receive any more messages
     this.#inFlight.clear();
-    this.destroy(new Error('Port disconnected'));
+    this.destroy();
   };
 
   /**
