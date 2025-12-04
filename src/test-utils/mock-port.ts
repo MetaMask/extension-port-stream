@@ -25,7 +25,7 @@ export class MockPort implements Runtime.Port {
   /**
    *
    * @param name - The name of the port
-   * @param maxMessageSize - The maximum message size in bytes (default 64MB)
+   * @param maxMessageSize - The maximum message size in bytes (default 64MiB)
    * @param expectedErrorMessage - The expected error message when exceeding max size (for testing purposes)
    * Originally found here: https://source.chromium.org/chromium/chromium/src/+/main:extensions/renderer/api/messaging/messaging_util.cc;l=97
    */
