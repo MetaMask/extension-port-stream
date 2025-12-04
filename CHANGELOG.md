@@ -14,11 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - handle chrome's new error message-too-large error message, coming in a future chrome release ([#83](https://github.com/MetaMask/extension-port-stream/pull/83))
 - don't throw when upstream port disconnects ([#82](https://github.com/MetaMask/extension-port-stream/pull/82))
 
-### Changed
-
-- chore: update security-code-scanner@main to action-security-code-scanner@v1 ([#67](https://github.com/MetaMask/extension-port-stream/pull/67))
-- Add allow-scripts (+ preinstall-always-fail) ([#80](https://github.com/MetaMask/extension-port-stream/pull/80))
-
 ## [5.0.0]
 
 ### Changed
