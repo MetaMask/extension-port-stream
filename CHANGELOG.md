@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.1]
+
+### Fixed
+
+- handle chrome's new error message-too-large error message, coming in a future chrome release ([#85](https://github.com/MetaMask/extension-port-stream/pull/85))
+- don't throw when upstream port disconnects ([#82](https://github.com/MetaMask/extension-port-stream/pull/82))
+
 ## [5.0.0]
 
 ### Changed
@@ -101,7 +108,8 @@ mostly backwards compatible with v4:
 - **(BREAKING)** Remove `readable-stream` dependency ([#4](https://github.com/MetaMask/extension-port-stream/pull/4))
   - Consumers using this package in browser environments will have to bring their own Node.js stream polyfill.
 
-[Unreleased]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.1...HEAD
+[5.0.1]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/MetaMask/extension-port-stream/compare/v4.2.0...v5.0.0
 [4.2.0]: https://github.com/MetaMask/extension-port-stream/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/MetaMask/extension-port-stream/compare/v4.0.0...v4.1.0
