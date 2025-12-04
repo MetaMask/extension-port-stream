@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- handle chrome's new error message-too-large error message, coming in a future chrome release ([#83](https://github.com/MetaMask/extension-port-stream/pull/83))
+- handle chrome's new error message-too-large error message, coming in a future chrome release ([#85](https://github.com/MetaMask/extension-port-stream/pull/85))
 - don't throw when upstream port disconnects ([#82](https://github.com/MetaMask/extension-port-stream/pull/82))
 
 ## [5.0.0]
