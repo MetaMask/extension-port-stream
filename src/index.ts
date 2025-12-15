@@ -107,6 +107,13 @@ export class ExtensionPortStream extends Duplex {
   #onDisconnect = (_port: Runtime.Port) => {
     // Clean up, as we aren't going to receive any more messages
     this.#inFlight.clear();
+
+    // If already destroyed (e.g., by external code), nothing more to do.
+    // push(null) and end() are not safe on destroyed streams.
+    if (this.destroyed) {
+      return;
+    }
+
     // Gracefully end both sides of the duplex stream to avoid "Premature close" errors.
     // Signal EOF on readable side
     this.push(null);
