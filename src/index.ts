@@ -115,16 +115,24 @@ export class ExtensionPortStream extends Duplex {
     if (this.writableFinished) {
       // Stream already finished, safe to destroy immediately
       this.destroy();
-    } else if (this.writableEnded) {
-      // end() was called but stream hasn't finished flushing yet
-      this.once('finish', () => {
-        this.destroy();
-      });
     } else {
-      // Stream hasn't ended, end it and destroy after it finishes
-      this.end(() => {
-        this.destroy();
-      });
+      // Stream hasn't finished yet. We need to handle both success ('finish')
+      // and failure ('error') cases. If pending writes fail because the port
+      // is disconnected, 'finish' will never fire - only 'error' will.
+      const onComplete = () => {
+        this.removeListener('finish', onComplete);
+        this.removeListener('error', onComplete);
+        if (!this.destroyed) {
+          this.destroy();
+        }
+      };
+      this.once('finish', onComplete);
+      this.once('error', onComplete);
+
+      // If end() hasn't been called yet, call it now
+      if (!this.writableEnded) {
+        this.end();
+      }
     }
   };
 
