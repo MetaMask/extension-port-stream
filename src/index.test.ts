@@ -635,14 +635,95 @@ describe('ExtensionPortStream', () => {
       const chunkSize = 1024;
       const { bgPortStream, uiPortStream, uiPort } = init({ chunkSize });
 
+      const bgPortErrors: Error[] = [];
+      bgPortStream.on('error', (err: Error) => {
+        bgPortErrors.push(err);
+      });
+      const uiPortErrors: Error[] = [];
+      uiPortStream.on('error', (err: Error) => {
+        uiPortErrors.push(err);
+      });
+
       // Simulate disconnections
-      const bgProm = new Promise((resolve) => bgPortStream.on('close', resolve));
-      const uiProm = new Promise((resolve) => uiPortStream.on('close', resolve));
-      // if either port goes away they will both throw disconnection errors
+      const bgDisconnect = new Promise((resolve) => bgPortStream.on('close', resolve));
+      const uiDisconnect = new Promise((resolve) => uiPortStream.on('close', resolve));
+
+      // When one port disconnects, both streams should close gracefully, without throwing errors
       uiPort.disconnect();
 
-      await expect(bgProm).resolves.toEqual(undefined);
-      await expect(uiProm).resolves.toEqual(undefined);
+      await expect(bgDisconnect).resolves.toEqual(undefined);
+      await expect(uiDisconnect).resolves.toEqual(undefined);
+
+      // Verify no errors were emitted
+      expect(bgPortErrors).toHaveLength(0);
+      expect(uiPortErrors).toHaveLength(0);
     });
+
+    it('handles disconnection gracefully when stream.end() was already called', async () => {
+      const chunkSize = 1024;
+      const { bgPortStream, uiPortStream, uiPort } = init({ chunkSize });
+
+      const bgPortErrors: Error[] = [];
+      bgPortStream.on('error', (err: Error) => {
+        bgPortErrors.push(err);
+      });
+      const uiPortErrors: Error[] = [];
+      uiPortStream.on('error', (err: Error) => {
+        uiPortErrors.push(err);
+      });
+
+      // Call end() on the stream before disconnect
+      bgPortStream.end();
+
+      // Simulate disconnections
+      const bgDisconnect = new Promise((resolve) => bgPortStream.on('close', resolve));
+      const uiDisconnect = new Promise((resolve) => uiPortStream.on('close', resolve));
+
+      // When one port disconnects, both streams should close gracefully, without throwing errors
+      uiPort.disconnect();
+
+      await expect(bgDisconnect).resolves.toEqual(undefined);
+      await expect(uiDisconnect).resolves.toEqual(undefined);
+
+      // Verify no errors were emitted
+      expect(bgPortErrors).toHaveLength(0);
+      expect(uiPortErrors).toHaveLength(0);
+    });
+
+    it('handles disconnection gracefully when stream is already finished', async () => {
+      const chunkSize = 1024;
+      const { bgPortStream, uiPortStream, uiPort } = init({ chunkSize });
+
+      const bgPortErrors: Error[] = [];
+      bgPortStream.on('error', (err: Error) => {
+        bgPortErrors.push(err);
+      });
+      const uiPortErrors: Error[] = [];
+      uiPortStream.on('error', (err: Error) => {
+        uiPortErrors.push(err);
+      });
+
+      // Simulate disconnections
+      const bgDisconnect = new Promise((resolve) => bgPortStream.on('close', resolve));
+      const uiDisconnect = new Promise((resolve) => uiPortStream.on('close', resolve));
+
+      // End the stream and wait for it to finish
+      const bgEnd = new Promise<void>((resolve) => bgPortStream.end(() => resolve()));
+      await bgEnd;
+
+      // Verify the stream is finished before disconnecting
+      expect(bgPortStream.writableFinished).toBe(true);
+
+      // When one port disconnects, both streams should close gracefully, without throwing errors
+      uiPort.disconnect();
+
+      await expect(bgDisconnect).resolves.toEqual(undefined);
+      await expect(uiDisconnect).resolves.toEqual(undefined);
+
+      // Verify no errors were emitted
+      expect(bgPortErrors).toHaveLength(0);
+      expect(uiPortErrors).toHaveLength(0);
+    });
+
   });
 });
