@@ -105,9 +105,27 @@ export class ExtensionPortStream extends Duplex {
    * @param _port - the port that was disconnected
    */
   #onDisconnect = (_port: Runtime.Port) => {
-    // clean up, as we aren't going to receive any more messages
+    // Clean up, as we aren't going to receive any more messages
     this.#inFlight.clear();
-    this.destroy();
+    // Gracefully end both sides of the duplex stream to avoid "Premature close" errors.
+    // Signal EOF on readable side
+    this.push(null);
+    // Signal end on writable side, then destroy to emit 'close' event.
+    // We must wait for the stream to actually finish before destroying.
+    if (this.writableFinished) {
+      // Stream already finished, safe to destroy immediately
+      this.destroy();
+    } else if (this.writableEnded) {
+      // end() was called but stream hasn't finished flushing yet
+      this.once('finish', () => {
+        this.destroy();
+      });
+    } else {
+      // Stream hasn't ended, end it and destroy after it finishes
+      this.end(() => {
+        this.destroy();
+      });
+    }
   };
 
   /**
