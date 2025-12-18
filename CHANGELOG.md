@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [5.0.2]
 
-### Uncategorized
+### Fixed
 
-- fix: gracefully end stream on port disconnect to prevent "Premature close" errors ([#86](https://github.com/MetaMask/extension-port-stream/pull/86))
+- Gracefully end stream on port disconnect to prevent "Premature close" errors ([#86](https://github.com/MetaMask/extension-port-stream/pull/86))
 
 ## [5.0.1]
 
