@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.2]
+
+### Fixed
+
+- Gracefully end stream on port disconnect to prevent "Premature close" errors ([#86](https://github.com/MetaMask/extension-port-stream/pull/86))
+
 ## [5.0.1]
 
 ### Fixed
@@ -108,7 +114,8 @@ mostly backwards compatible with v4:
 - **(BREAKING)** Remove `readable-stream` dependency ([#4](https://github.com/MetaMask/extension-port-stream/pull/4))
   - Consumers using this package in browser environments will have to bring their own Node.js stream polyfill.
 
-[Unreleased]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.1...HEAD
+[Unreleased]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.2...HEAD
+[5.0.2]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.1...v5.0.2
 [5.0.1]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/MetaMask/extension-port-stream/compare/v4.2.0...v5.0.0
 [4.2.0]: https://github.com/MetaMask/extension-port-stream/compare/v4.1.0...v4.2.0
