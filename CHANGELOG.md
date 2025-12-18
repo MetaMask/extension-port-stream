@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.2]
+
+### Uncategorized
+
+- fix: gracefully end stream on port disconnect to prevent "Premature close" errors ([#86](https://github.com/MetaMask/extension-port-stream/pull/86))
+
 ## [5.0.1]
 
 ### Fixed
@@ -19,7 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **BREAKING:** Chunk large port stream messages into smaller frames by default ([#68](https://github.com/MetaMask/extension-port-stream/pull/68))
+
   - By default, `ExtensionPortStream` will send messages in 64MB chunks on Chromium-based browsers. When this mode is used the receiving end must also use `ExtensionPortStream` in its default mode:
+
     ```javascript
     import { ExtensionPortStream } from "extension-port-stream";
 
@@ -30,17 +38,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
     // Enjoy!
     ```
+
   - To disable chunking set the `chunkSize` option to `0`. This will make the transport
-mostly backwards compatible with v4:
-    ```javascript
+    mostly backwards compatible with v4:
+    `javascript
     import { ExtensionPortStream } from "extension-port-stream";
     extension.runtime.onConnect.addListener(connectRemote);
     const portStream = new ExtensionPortStream(remotePort, {
       chunkSize: 0, // disable chunking
     });
     // Enjoy!
-    ```
+    `
   - `message-too-large` is emitted when a message is too large to send in a single `postMessage` call and needs to be chunked. This event is only emitted when chunking is enabled (default).
+
 - **BREAKING:** Node.js-style `Buffer` messages are no longer supported ([#68](https://github.com/MetaMask/extension-port-stream/pull/68))
 
 ## [4.2.0]
@@ -108,7 +118,8 @@ mostly backwards compatible with v4:
 - **(BREAKING)** Remove `readable-stream` dependency ([#4](https://github.com/MetaMask/extension-port-stream/pull/4))
   - Consumers using this package in browser environments will have to bring their own Node.js stream polyfill.
 
-[Unreleased]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.1...HEAD
+[Unreleased]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.2...HEAD
+[5.0.2]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.1...v5.0.2
 [5.0.1]: https://github.com/MetaMask/extension-port-stream/compare/v5.0.0...v5.0.1
 [5.0.0]: https://github.com/MetaMask/extension-port-stream/compare/v4.2.0...v5.0.0
 [4.2.0]: https://github.com/MetaMask/extension-port-stream/compare/v4.1.0...v4.2.0
