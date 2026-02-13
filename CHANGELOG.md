@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [5.0.3]
 
-### Uncategorized
+### Fixed
 
-- fix: correct a typo in error message ([#88](https://github.com/MetaMask/extension-port-stream/pull/88))
+- fix: correct a typo in error message handler ([#88](https://github.com/MetaMask/extension-port-stream/pull/88))
 
 ## [5.0.2]
 
