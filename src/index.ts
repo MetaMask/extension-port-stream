@@ -107,6 +107,7 @@ export class ExtensionPortStream extends Duplex {
   #onDisconnect = (_port: Runtime.Port) => {
     // Clean up, as we aren't going to receive any more messages
     this.#inFlight.clear();
+    this.#removePortListeners();
 
     // If already destroyed (e.g., by external code), nothing more to do.
     // push(null) and end() are not safe on destroyed streams.
@@ -142,6 +143,34 @@ export class ExtensionPortStream extends Duplex {
       }
     }
   };
+
+  /**
+   * Removes this stream's listeners from the port.
+   *
+   * Firefox keeps a port's listeners alive (on the extension context) until
+   * they are removed or the page unloads, even after the port disconnects.
+   * Any listener left attached keeps this stream, and everything piped to it,
+   * reachable for the lifetime of the page.
+   */
+  #removePortListeners() {
+    this.#port.onMessage.removeListener(this.#onMessage);
+    this.#port.onDisconnect.removeListener(this.#onDisconnect);
+  }
+
+  /**
+   * Removes the port listeners when the stream is destroyed, including when
+   * it is destroyed by external code before the port disconnects.
+   *
+   * @param error - the error the stream was destroyed with, if any
+   * @param callback - called once cleanup is complete
+   */
+  override _destroy(
+    error: Error | null,
+    callback: (err: Error | null) => void,
+  ) {
+    this.#removePortListeners();
+    callback(error);
+  }
 
   /**
    * Explicitly sets read operations to a no-op.
