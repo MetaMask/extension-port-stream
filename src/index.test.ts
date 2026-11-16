@@ -829,5 +829,37 @@ describe('ExtensionPortStream', () => {
       expect(destroySpy).toHaveBeenCalled();
     });
 
+    it('removes its listeners from the port when the port disconnects', async () => {
+      const { bgPortStream, bgPort, uiPort } = init({ chunkSize: 1024 });
+      const [onMessageListener] = bgPort.onMessage.addListener.mock.calls[0];
+      const [onDisconnectListener] =
+        bgPort.onDisconnect.addListener.mock.calls[0];
+      const bgClosed = new Promise((resolve) => bgPortStream.on('close', resolve));
+
+      uiPort.disconnect();
+      await bgClosed;
+
+      // Listeners left on a disconnected port keep the stream (and everything
+      // piped to it) alive, so they must be removed.
+      expect(bgPort.onMessage.removeListener).toHaveBeenCalledWith(
+        onMessageListener,
+      );
+      expect(bgPort.onDisconnect.removeListener).toHaveBeenCalledWith(
+        onDisconnectListener,
+      );
+      expect(bgPort.onMessage.hasListeners()).toBe(false);
+    });
+
+    it('removes its listeners from the port when the stream is destroyed before the port disconnects', async () => {
+      const { bgPortStream, bgPort } = init({ chunkSize: 1024 });
+      const bgClosed = new Promise((resolve) => bgPortStream.on('close', resolve));
+
+      bgPortStream.destroy();
+      await bgClosed;
+
+      expect(bgPort.onMessage.hasListeners()).toBe(false);
+      expect(bgPort.onDisconnect.hasListeners()).toBe(false);
+    });
+
   });
 });
